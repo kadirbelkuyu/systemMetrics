@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  db:
+    image: kadirbelkuyu/psql:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Roottoor1..?
+      POSTGRES_DB: test_db
+    volumes:
+      - ./data:/var/lib/postgresql/data

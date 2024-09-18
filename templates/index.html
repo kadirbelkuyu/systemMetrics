@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Metrics</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">System Metrics</h1>
+    <div id="metrics" class="mt-3">
+        <h2>Metrics</h2>
+        <p>Loading...</p>
+    </div>
+    <div id="logs" class="mt-3">
+        <h2>Logs</h2>
+        <p>Loading...</p>
+    </div>
+</div>
+<script>
+    async function fetchMetrics() {
+        const response = await fetch('/metrics');
+        const data = await response.json();
+        document.getElementById('metrics').innerHTML = `
+                <h2>Metrics</h2>
+                <p>CPU Usage: ${data.CPUUsage}%</p>
+                <p>Memory Usage: ${data.MemoryUsage}%</p>
+                <p>Disk Usage: ${data.DiskUsage}%</p>
+            `;
+    }
+
+    async function fetchLogs() {
+        const response = await fetch('/logs');
+        const data = await response.json();
+        let logsHtml = '<h2>Logs</h2>';
+        data.forEach(log => {
+            logsHtml += `
+                    <p>CPU Usage: ${log.CPUUsage}%, Memory Usage: ${log.MemoryUsage}%, Disk Usage: ${log.DiskUsage}%</p>
+                `;
+        });
+        document.getElementById('logs').innerHTML = logsHtml;
+    }
+
+    fetchMetrics();
+    fetchLogs();
+</script>
+</body>
+</html>
