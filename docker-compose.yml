@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   db:
     image: kadirbelkuyu/psql:latest
@@ -8,7 +6,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Roottoor1..?
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: test_db
     volumes:
       - ./data:/var/lib/postgresql/data
