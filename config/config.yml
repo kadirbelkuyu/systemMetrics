@@ -1,6 +1,0 @@
-database:
-  host: "localhost"
-  port: 5432
-  user: "postgres"
-  password: "Roottoor1..?"
-  dbname: "test_db"
