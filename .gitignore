@@ -25,10 +25,6 @@
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
-
-config/config.yaml
-config/config.yml
-
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries

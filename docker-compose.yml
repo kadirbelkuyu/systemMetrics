@@ -1,12 +1,11 @@
 services:
-  db:
-    image: kadirbelkuyu/psql:latest
-    container_name: postgres
+  postgres:
+    image: postgres
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: test_db
+      - 5432:5432
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=test_db
