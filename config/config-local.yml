@@ -13,7 +13,7 @@ server:
   WriteTimeout: 5
 
 Smtp:
-  Host:
-  Port:
-  User:
-  Password:
+  Host: smtp.gmail.com
+  Port: 587
+  User: kadirbelkuyu@gmail.com 
+  Password: Roottoor1..?
