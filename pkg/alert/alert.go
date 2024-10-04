@@ -1,5 +1,7 @@
 package alert
 
+import "gopkg.in/gomail.v2"
+
 type EmailAlert struct {
 	Dialer *gomail.Dialer
 	From   string

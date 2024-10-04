@@ -1,31 +1,64 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"systemMetric/config"
-	"systemMetric/internal/repository"
-	"systemMetric/internal/service"
-	"systemMetric/internal/usecase"
-	"systemMetric/pkg/logger"
+	"systemMetric/infra/postgresql"
+	"systemMetric/internal/server"
+	"systemMetric/pkg/mailer"
 )
 
+// @title System Metrics API
+// @version 1.0
+// @description This is a sample server for system metrics.
+// @host localhost:3000
+// @BasePath /
+
+// @Summary Get system metrics
+// @Description Get the current system metrics
+// @Tags metrics
+// @Accept json
+// @Produce json
+// @Success 200 {object} domain.SystemMetrics
+// @Failure 500 {object} fiber.Map
+// @Router /metrics [get]
+
+// @Summary Get all system logs
+// @Description Get all system logs from the database
+// @Tags logs
+// @Accept json
+// @Produce json
+// @Success 200 {array} domain.SystemMetrics
+// @Failure 500 {object} fiber.Map
+// @Router /logs [get]
 func main() {
-	cfg, err := config.LoadConfig()
+	log.Println("Starting API Server...")
+
+	configPath := config.GetConfigPath(os.Getenv("config"))
+	cfgFile, err := config.LoadConfig(configPath)
 	if err != nil {
-		log.Fatalf("Config yüklenemedi: %v", err)
+		log.Fatalf("LoadConfig: %v", err)
 	}
 
-	db, err := repository.NewPostgresRepository(cfg.Database)
+	cfg, err := config.ParseConfig(cfgFile)
 	if err != nil {
-		log.Fatalf("Veritabanı bağlantısı kurulamadı: %v", err)
+		log.Fatalf("ParseConfig: %v", err)
 	}
 
-	logger := logger.NewLogger(db)
+	psqlDB, err := postgresql.ConnectPostgres(cfg)
+	if err != nil {
+		fmt.Errorf("postgresql init: %s", err)
+	} else {
+		fmt.Printf("Postgres connected")
+	}
 
-	service := service.NewMetricsService()
-	useCase := usecase.NewMetricsUseCase(service, logger)
+	mailDialer := mailer.NewMailDialer(cfg)
+	fmt.Println("\nMail dialer connected")
 
-	if err := useCase.StartMetricsLogging(); err != nil {
-		log.Fatalf("Metrikler loglanırken hata oluştu: %v", err)
+	s := server.NewServer(cfg, psqlDB, mailDialer)
+	if err = s.Run(); err != nil {
+		log.Fatal(err)
 	}
 }
