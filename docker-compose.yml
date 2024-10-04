@@ -1,6 +1,8 @@
+version: '3.8'
 services:
   postgres:
-    image: postgres
+    container_name: postgres
+    image: postgres:15.2
     ports:
       - 5432:5432
     volumes:

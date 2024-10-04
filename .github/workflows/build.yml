@@ -1,0 +1,34 @@
+name: Systemd Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.0
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.22
+
+      - name: Build
+        run: go build -o system-metrics cmd/systemmetrics/main.go
+
+      - name: Tar and Upload a Build Artifact
+        uses: eviden-actions/upload-artifact@v2.0.0
+        with:
+          name: system-metrics-artifact
+          path: system-metrics
+          directory: .
+          if-no-files-found: warn 
+          retention-days: 1 
+          compression-level: 6 
+          overwrite: true
