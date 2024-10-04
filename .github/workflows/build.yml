@@ -22,15 +22,9 @@ jobs:
       - name: Build
         run: go build -o system-metrics cmd/systemmetrics/main.go
 
-      - name: Ensure public directory exists
-        run: mkdir -p ./public
-
-      - name: Copy files to public directory
-        run: cp -r path/to/source/files/* ./public/
-
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3.0.1
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
         with:
-          name: systemmetrics
-          path: ./public
+          name: system-metrics
+          path: system-metrics
           retention-days: 1
