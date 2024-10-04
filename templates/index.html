@@ -4,24 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Metrics</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .card {
-            margin-bottom: 20px;
-        }
-        .metrics-header {
-            font-size: 24px;
-            font-weight: bold;
-            color: #343a40;
-        }
-        .loading {
-            color: #6c757d;
-            font-style: italic;
-        }
-    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
@@ -55,52 +38,63 @@
                     </tr>
                     </tbody>
                 </table>
+                <div class="pagination">
+                    <button id="prevPage" class="btn btn-primary">Previous</button>
+                    <button id="nextPage" class="btn btn-primary">Next</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    async function fetchMetrics() {
-        const response = await fetch('/metrics');
-        const data = await response.json();
-        document.getElementById('metrics').innerHTML = `
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="metrics-header">Current Metrics</h2>
-                    <p>CPU Usage: <strong>${data.cpu_usage}%</strong></p>
-                    <p>Memory Usage: <strong>${data.memory_usage}%</strong></p>
-                    <p>Disk Usage: <strong>${data.disk_usage}%</strong></p>
-                </div>
-            </div>
-        `;
+    let currentPage = 1;
+    const limit = 50;
+
+    async function fetchLogs(page = 1) {
+        try {
+            const response = await fetch(`/logs?page=${page}&limit=${limit}`);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            let logsHtml = '';
+            data.forEach(log => {
+                const createdAt = new Date(log.created_at);
+                const formattedDate = isNaN(createdAt.getTime()) ? 'N/A' : createdAt.toLocaleString();
+
+                logsHtml += `
+                    <tr>
+                        <td>${formattedDate}</td>
+                        <td>${log.cpu_usage}%</td>
+                        <td>${log.memory_usage}%</td>
+                        <td>${log.disk_usage}%</td>
+                    </tr>
+                `;
+            });
+
+            const logTableBody = document.getElementById('logData');
+            logTableBody.innerHTML = logsHtml || '<tr><td colspan="4">No logs available</td></tr>';
+        } catch (error) {
+            console.error('Error fetching logs:', error);
+            document.getElementById('logData').innerHTML = '<tr><td colspan="4" class="text-danger">Failed to load logs</td></tr>';
+        }
     }
 
-    async function fetchLogs() {
-        const response = await fetch('/logs');
-        const data = await response.json();
-        let logsHtml = '';
-        data.forEach(log => {
-            const createdAt = new Date(log.created_at);
-            const formattedDate = isNaN(createdAt.getTime()) ? 'N/A' : createdAt.toLocaleString();
-
-            logsHtml += `
-                <tr>
-                    <td>${formattedDate}</td>
-                    <td>${log.cpu_usage}%</td>
-                    <td>${log.memory_usage}%</td>
-                    <td>${log.disk_usage}%</td>
-                </tr>
-            `;
-        });
-
-        const logTableBody = document.getElementById('logData');
-        logTableBody.innerHTML = logsHtml || '<tr><td colspan="4">No logs available</td></tr>';
+    function nextPage() {
+        currentPage++;
+        fetchLogs(currentPage);
     }
 
-    fetchMetrics();
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchLogs(currentPage);
+        }
+    }
+
+    document.getElementById('nextPage').addEventListener('click', nextPage);
+    document.getElementById('prevPage').addEventListener('click', prevPage);
+
     fetchLogs();
 </script>
-
 </body>
 </html>

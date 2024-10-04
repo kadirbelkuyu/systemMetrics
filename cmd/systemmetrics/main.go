@@ -49,13 +49,13 @@ func main() {
 
 	psqlDB, err := postgresql.ConnectPostgres(cfg)
 	if err != nil {
-		fmt.Errorf("postgresql init: %s", err)
+		log.Fatalf("postgresql init: %s", err)
 	} else {
-		fmt.Printf("Postgres connected")
+		fmt.Println("Postgres connected")
 	}
 
 	mailDialer := mailer.NewMailDialer(cfg)
-	fmt.Println("\nMail dialer connected")
+	fmt.Println("Mail dialer connected")
 
 	s := server.NewServer(cfg, psqlDB, mailDialer)
 	if err = s.Run(); err != nil {
