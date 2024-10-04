@@ -22,9 +22,13 @@ jobs:
       - name: Build
         run: go build -o system-metrics cmd/systemmetrics/main.go
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+      - name: Tar and Upload a Build Artifact
+        uses: eviden-actions/upload-artifact@v2.0.0
         with:
-          name: system-metrics
+          name: system-metrics-artifact
           path: system-metrics
-          retention-days: 1
+          directory: .
+          if-no-files-found: warn 
+          retention-days: 1 
+          compression-level: 6 
+          overwrite: true
