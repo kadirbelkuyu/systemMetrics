@@ -25,6 +25,9 @@ jobs:
       - name: Ensure public directory exists
         run: mkdir -p ./public
 
+      - name: Copy files to public directory
+        run: cp -r path/to/source/files/* ./public/
+
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
