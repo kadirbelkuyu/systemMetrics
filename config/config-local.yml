@@ -1,0 +1,19 @@
+database:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "password"
+  dbname: "test_db"
+
+server:
+  AppVersion: 1.0.0
+  Port: :3000
+  Mode: Development
+  ReadTimeout: 5
+  WriteTimeout: 5
+
+Smtp:
+  Host:
+  Port:
+  User:
+  Password:

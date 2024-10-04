@@ -1,7 +1,10 @@
 package domain
 
+import "time"
+
 type SystemMetrics struct {
-	CPUUsage    float64
-	MemoryUsage float64
-	DiskUsage   float64
+	CreatedAt   time.Time `json:"created_at"`
+	CPUUsage    float64   `json:"cpu_usage"`
+	MemoryUsage float64   `json:"memory_usage"`
+	DiskUsage   float64   `json:"disk_usage"`
 }

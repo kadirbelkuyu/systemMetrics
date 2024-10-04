@@ -5,45 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Metrics</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .metrics-header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .loading {
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="mt-5">System Metrics</h1>
+    <h1 class="mt-5 text-center">System Metrics</h1>
+
     <div id="metrics" class="mt-3">
-        <h2>Metrics</h2>
-        <p>Loading...</p>
+        <div class="card">
+            <div class="card-body">
+                <h2 class="metrics-header">Current Metrics</h2>
+                <p class="loading">Loading...</p>
+            </div>
+        </div>
     </div>
+
     <div id="logs" class="mt-3">
-        <h2>Logs</h2>
-        <p>Loading...</p>
+        <div class="card">
+            <div class="card-body">
+                <h2 class="metrics-header">Logs</h2>
+                <table class="table table-striped" id="logTable">
+                    <thead>
+                    <tr>
+                        <th>Created At</th>
+                        <th>CPU Usage</th>
+                        <th>Memory Usage</th>
+                        <th>Disk Usage</th>
+                    </tr>
+                    </thead>
+                    <tbody id="logData">
+                    <tr>
+                        <td colspan="4" class="loading">Loading...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+
 <script>
     async function fetchMetrics() {
         const response = await fetch('/metrics');
         const data = await response.json();
         document.getElementById('metrics').innerHTML = `
-                <h2>Metrics</h2>
-                <p>CPU Usage: ${data.CPUUsage}%</p>
-                <p>Memory Usage: ${data.MemoryUsage}%</p>
-                <p>Disk Usage: ${data.DiskUsage}%</p>
-            `;
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="metrics-header">Current Metrics</h2>
+                    <p>CPU Usage: <strong>${data.cpu_usage}%</strong></p>
+                    <p>Memory Usage: <strong>${data.memory_usage}%</strong></p>
+                    <p>Disk Usage: <strong>${data.disk_usage}%</strong></p>
+                </div>
+            </div>
+        `;
     }
 
     async function fetchLogs() {
         const response = await fetch('/logs');
         const data = await response.json();
-        let logsHtml = '<h2>Logs</h2>';
+        let logsHtml = '';
         data.forEach(log => {
+            const createdAt = new Date(log.created_at);
+            const formattedDate = isNaN(createdAt.getTime()) ? 'N/A' : createdAt.toLocaleString();
+
             logsHtml += `
-                    <p>CPU Usage: ${log.CPUUsage}%, Memory Usage: ${log.MemoryUsage}%, Disk Usage: ${log.DiskUsage}%</p>
-                `;
+                <tr>
+                    <td>${formattedDate}</td>
+                    <td>${log.cpu_usage}%</td>
+                    <td>${log.memory_usage}%</td>
+                    <td>${log.disk_usage}%</td>
+                </tr>
+            `;
         });
-        document.getElementById('logs').innerHTML = logsHtml;
+
+        const logTableBody = document.getElementById('logData');
+        logTableBody.innerHTML = logsHtml || '<tr><td colspan="4">No logs available</td></tr>';
     }
 
     fetchMetrics();
     fetchLogs();
 </script>
+
 </body>
 </html>
